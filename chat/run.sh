@@ -9,6 +9,9 @@ rmifpresent() {
 rmifpresent redis
 rmifpresent myapp
 
+mkdir logs
+touch logs/logfile.txt
+
 docker run -d --name redis redis
 docker run -d --name myapp -p 8000:8000 -v $(pwd)/logs:/app/logs --link redis:redis -e REDISCLOUD_URL=redis://redis:6379 myapp
 
