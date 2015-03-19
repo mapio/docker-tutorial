@@ -3,7 +3,7 @@
 This repo contains a couple of `Dockerfile`s and a few scripts used for a
 [Docker](https://www.docker.com/) tutorial based on the
 [Python WebSockets Chat](https://github.com/heroku-examples/python-websockets-chat) example
-application by Kenneth Reitz.
+application by [Kenneth Reitz](http://www.kennethreitz.org/).
 
 The chat application is based on [gunicorn](http://gunicorn.org/) and
 [redis](http://redis.io/), this repo contains (among other files):
