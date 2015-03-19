@@ -2,17 +2,17 @@
 
 rmifpresent() {
 	if docker ps -a | grep -q $1; then
-		docker rm -fv $1
+		echo "Killing previous instance of $(docker rm -fv $1)..."
 	fi
 }
 
 rmifpresent redis
-rmifpresent myapp
+rmifpresent chat
 
-mkdir logs
+mkdir -p logs
 touch logs/logfile.txt
 
 docker run -d --name redis redis
-docker run -d --name myapp -p 8000:8000 -v $(pwd)/logs:/app/logs --link redis:redis -e REDISCLOUD_URL=redis://redis:6379 myapp
+docker run -d --name chat -p 8000:8000 -v $(pwd)/logs:/app/logs --link redis:redis -e REDISCLOUD_URL=redis://redis:6379 chat
 
 tail -f logs/logfile.txt
