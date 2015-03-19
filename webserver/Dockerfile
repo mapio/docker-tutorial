@@ -8,7 +8,7 @@ RUN apt-get update
 
 RUN apt-get install -qy libevent-1.4 realpath apt-transport-https
 
-RUN pip install gunicorn gevent flask
+RUN pip install gunicorn gevent
 
 RUN rm -rf /var/lib/apt/lists/*
 
