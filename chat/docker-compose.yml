@@ -1,0 +1,12 @@
+chat:
+  image: chat
+  links:
+    - redis
+  ports:
+    - "8000:8000"
+  volumes:
+    - ./logs:/app/logs
+  environment:
+    - REDISCLOUD_URL=redis://redis:6379
+redis:
+  image: redis
