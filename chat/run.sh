@@ -12,7 +12,7 @@ rmifpresent chat
 mkdir -p logs
 touch logs/logfile.txt
 
-docker run --rm -d --name redis redis
-docker run --rm -d --name chat -p 8000:8000 -v $(pwd)/logs:/app/logs --link redis:redis -e REDISCLOUD_URL=redis://redis:6379 chat
+docker run -d --name redis redis
+docker run -d --name chat -p 8000:8000 -v $(pwd)/logs:/app/logs --link redis:redis -e REDISCLOUD_URL=redis://redis:6379 chat
 
 tail -f logs/logfile.txt
