@@ -11,4 +11,6 @@ mkdir ./app
 cp -r python-websockets-chat/{static,templates,chat.py} ./app
 cp requirements.txt ./app
 
-docker build -t chat .
+docker build -t dt/chat .
+
+rm -rf ./app

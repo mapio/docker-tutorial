@@ -1,4 +1,4 @@
-FROM gunicorn
+FROM dt/gunicorn
 
 MAINTAINER Massimo Santini "santini@di.unimi.it"
 

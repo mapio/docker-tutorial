@@ -1,9 +1,9 @@
 chat:
-  image: chat
+  image: dt/chat
   links:
     - redis
   ports:
-    - "8000:8000"
+    - "80:8000"
   volumes:
     - ./logs:/app/logs
   environment:

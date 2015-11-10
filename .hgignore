@@ -1,3 +1,4 @@
-python-websockets-chat
-app
-logs
+python-websockets-chat$
+app$
+logs$
+\.env$

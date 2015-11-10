@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t gunicorn .
+docker build -t dt/gunicorn .
