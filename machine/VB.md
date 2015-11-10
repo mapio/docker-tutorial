@@ -16,7 +16,7 @@ Run the tutorial code
         ( cd gunicorn && ./build.sh )
         ( cd chat && ./build.sh )
         ( cd chat && docker-compose up )
-        open http://$(docker-machine ip dt-do)
+        open http://$(docker-machine ip dt-vb)
 
 To cleanup run
 
