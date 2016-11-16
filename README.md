@@ -37,8 +37,8 @@ The chat application is based on [gunicorn](http://gunicorn.org/) and
 * a [Dockerfile](webapp/chat/Dockerfile) (that derives from the `dt/gunicorn` image) that
   encapsulates the application in the `dt/chat` image;
 * a [run.sh](webapp/chat/run.sh) script show how to run the official `redis`
-  [image](https://registry.hub.docker.com/_/redis/), and how to run the `dt/chat` image
-  [linking](https://docs.docker.com/userguide/dockerlinks/) it to
-  the redis server and persisting the application logs in a locally attached
-  [volume](https://docs.docker.com/userguide/dockervolumes/).
-* a [docker-compose.yml](webapp/docker-compose.yml) configuration file to run the application using [docker-compose](https://docs.docker.com/compose/) (instead of the abovementioned scripts),
+  [image](https://registry.hub.docker.com/_/redis/), and how to run the `dt/chat` image using
+  the new [networking](https://docs.docker.com/engine/userguide/networking/) features to make
+  it talk to the the redis server, persisting the application logs in a locally attached
+  [volume](https://docs.docker.com/engine/tutorials/dockervolumes/).
+* a [docker-compose.yml](webapp/docker-compose.yml) configuration file to run the application using [Docker Compose](https://docs.docker.com/compose/) (instead of the abovementioned scripts),

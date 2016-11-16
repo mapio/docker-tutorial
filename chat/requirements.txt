@@ -1,3 +1,0 @@
-Flask-Sockets==0.1
-gevent-websocket==0.3.6
-redis==2.8.0
