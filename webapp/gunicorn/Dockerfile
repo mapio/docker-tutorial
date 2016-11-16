@@ -1,18 +1,10 @@
-FROM python:2.7.11
+FROM python:2.7-alpine
 
 MAINTAINER Massimo Santini "santini@di.unimi.it"
 
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update
-
-RUN apt-get install -qy libevent-dev
+RUN apk add --update gcc python-dev musl-dev && rm -rf /var/cache/apk/*
 
 RUN pip install gunicorn gevent
-
-RUN apt-get -qy autoremove
-
-RUN rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8000
 
