@@ -5,12 +5,16 @@ developers.
 
 This tutorial is based on [Docker](https://www.docker.com/) version 1.12.3
 (build 6b644ec) and [Docker Compose](https://docs.docker.com/compose/) version
-1.9.0-rc4 (build 181a4e9). Basi [instructions](machine/) are provided on how to use [docker-machine](https://docs.docker.com/machine/) to setup a Docker instance on [Digital Ocean](https://www.digitalocean.com/), or [Amazon Web Services](https://aws.amazon.com/).
+1.9.0-rc4 (build 181a4e9). Basi [instructions](machine/) are provided on how to
+use [Docker Machine](https://docs.docker.com/machine/) to setup a Docker
+instance on [VirtualBox](https://www.virtualbox.org/),  [Digital
+Ocean](https://www.digitalocean.com/), and [Amazon Web
+Services](https://aws.amazon.com/).
 
 
 ## Slides
 
-The [slides](slides/) directory contains the slides of the lecture.
+The [slides](slides/) directory contains the slides of the lecture (also   [browsable](http://broad-foot.surge.sh/) online).
 
 ## How to compile (and execute) sources in different languages
 
