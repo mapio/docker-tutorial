@@ -1,8 +1,8 @@
 #!/bin/bash
 
-rm_image_if_present() {
+rm_container_if_present() {
 	if docker ps -a | grep -q $1; then
-		echo "Killing previous instance of $(docker rm -fv $1)..."
+		echo "Killing previous instance of container $(docker rm -fv $1)..."
 	fi
 }
 
@@ -12,8 +12,8 @@ rm_network_if_present() {
 	fi
 }
 
-rm_image_if_present redis
-rm_image_if_present chat
+rm_container_if_present redis
+rm_container_if_present chat
 rm_network_if_present dt-net
 
 mkdir -p logs

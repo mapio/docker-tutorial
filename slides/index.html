@@ -29,6 +29,12 @@ Massimo Santini
 
 ---
 
+class: center
+
+![front](front.jpg)
+
+---
+
 class: center, middle
 
 # Introduction
@@ -40,30 +46,30 @@ class: center, middle
 Issues when developing complex software
 
 * libraries (polyglot),
-* services (db server, http server, cache, log)
+* services (db server, http server, cache, log).
 
 Why not let the developers take care of (some) operations aspects?
 
-* the "devops" approach
+* the "devops" approach!
 
 ---
 
 ## Desiderata
 
-From the "dev" point of view:
+From the **dev** point of view:
 
-* predictability
-* replicability
-* versioning
-* lightweight
+* predictability,
+* replicability,
+* versioning,
+* lightweight.
 
-From the "ops" point of view:
+From the **ops** point of view:
 
-* fault tolerance
-* portability
-* scalability
-* composability
-* scheduling & orchestration
+* fault tolerance,
+* portability,
+* scalability,
+* composability,
+* scheduling & orchestration.
 
 ---
 
@@ -71,19 +77,19 @@ From the "ops" point of view:
 
 Configuration management
 
-* [Saltstack](http://saltstack.com/)
-* [Chef](https://www.chef.io/chef/)
-* [Puppet](https://puppetlabs.com/)
-* [Ansible](http://www.ansible.com/)
+* [Saltstack](http://saltstack.com/),
+* [Chef](https://www.chef.io/chef/),
+* [Puppet](https://puppetlabs.com/),
+* [Ansible](http://www.ansible.com/).
 
 Virtualization
 
-* [Vagrant](https://www.vagrantup.com/)
+* [Vagrant](https://www.vagrantup.com/).
 
 Virtualization with OS (GNU/Linux) support
 
-* [KVM](http://www.linux-kvm.org/)
-* [LXC](https://linuxcontainers.org/)
+* [KVM](http://www.linux-kvm.org/),
+* [LXC](https://linuxcontainers.org/).
 
 ---
 
@@ -91,13 +97,13 @@ Virtualization with OS (GNU/Linux) support
 
 Process & memory
 
-* LXC = kernel cgroups + namespaces
+* LXC = kernel cgroups + namespaces.
 
 Filesystem
 
-* AUFS
-* Device Mapper
-* BTRFS
+* AUFS,
+* Device Mapper,
+* BTRFS.
 
 ---
 
@@ -109,40 +115,34 @@ class: center, middle
 
 ## **image** (filesystem)
 
-* a DAG of copy-on-write **read-only** filesystems
+* a DAG of copy-on-write **read-only** filesystems,
 * obtained by: **pull** (from a *hub*, also **push**), **build**, or **commit**.
 
 ```bash
 $ docker pull hello-world
-
 ...
-Digest: sha256:517f03be3f8169d84711c9ffb2b3235a4d27c1eb4ad147f6248c8040adb93113
+Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
 Status: Downloaded newer image for hello-world:latest
 
-$ docker images -a
-
-REPOSITORY   TAG     IMAGE ID      CREATED     VIRTUAL SIZE
-hello-world  latest  975b84d108f1  4 weeks ago        960 B
-<none>       <none>  3f12c794407e  4 weeks ago        960 B
-
+$ docker images
+REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
+hello-world           latest              c54a2cc56cbb        4 months ago        1.848 kB
 ```
 
 ---
 
 ## **container** (filesystem/process)
 
-* an **image** plus a **writable** copy-on-write layer
-* (explicitly) obtained by: **create**
+* an **image** plus a **writable** copy-on-write layer,
+* (explicitly) obtained by: **create**.
 
 ```bash
-
 $ docker create --name dt-image hello-world
 8c17068f0c805e50778522edecbc15e7e47edd4ba961adfba7da05d403d65e12
 
 $ docker ps -a
 CONTAINER ID  IMAGE        COMMAND   CREATED        STATUS  PORTS  NAMES
 8c17068f0c80  hello-world  "/hello"  5 seconds ago  Created        dt-image
-
 ```
 
 * (implicitly) obtained by: **run** = (**create** + **start**),
@@ -162,14 +162,15 @@ CONTAINER ID  IMAGE        COMMAND   CREATED         STATUS     PORTS  NAMES
 
 ## Bookkeeping
 
-Take care of your images by
+Take care of your *images* by
 
-* list, inspect, remove
+* list (**images**), inspect (**inspect**), remove (**rmi**),
+* **pull**, **push**, **export**, **import**.
 
-Take care of your containers by
+Take care of your *containers* by
 
-* list, inspect, remove (filesystem)
-* start, stop, kill, pause, unpause (processes)
+* list (**ps**), inspect (**inspect**), remove (**rm**) filesystem,
+* **start**, **stop**, **kill**, **pause**, **unpause** (processes).
 
 ---
 
@@ -184,14 +185,15 @@ class: center, middle
 * write a `Dockerfile` to describe build steps and configurations…
 
 ```Dockerfile
-FROM python:2.7.7
+FROM python:2.7-alpine
 MAINTAINER Massimo Santini "santini@di.unimi.it"
-RUN apt-get update && apt-get install -qy libevent-dev
+RUN apk add --update gcc python-dev musl-dev && rm -rf /var/cache/apk/*
 RUN pip install gunicorn gevent
+EXPOSE 8000
 RUN mkdir /app
-COPY app.py /app/app.py
 WORKDIR /app
-CMD [ "gunicorn", "-k", "gevent", "-b", "0.0.0.0:8000", "app:app" ]
+CMD [ "gunicorn", "--log-level", "INFO", "--error-logfile", "-", "-k", "gevent", "-b", "0.0.0.0:8000" ,"app:app" ]
+COPY app.py /app/app.py
 ```
 
 * and **build**!
@@ -201,23 +203,23 @@ $ docker build -t dt/gunicorn .
 ...
 
 $ docker images
-REPOSITORY   TAG     IMAGE ID      CREATED        VIRTUAL SIZE
-dt/gunicorn  latest  af8e461b5e1c  1 minutes ago      1.088 GB
-hello-world  latest  975b84d108f1  4 weeks ago           960 B
-python       2.7.7   a87a2288ce78  15 months ago      1.043 GB
+REPOSITORY   TAG        IMAGE ID     CREATED        SIZE
+dt/gunicorn  latest     11a0c2a15c01 12 minutes ago 213.4 MB
+python       2.7-alpine 055c3b9a9656 4 weeks ago    71.37 MB
+hello-world  latest     c54a2cc56cbb 4 months ago   1.848 kB
 ```
 
 ---
 
 ## **commit**
 
-* run (and modify) a container…
+* run (and *modify*) a container…
 
 ```bash
-$ docker run -it --name dt-busybox busybox
-Unable to find image 'busybox:latest' locally
-latest: Pulling from library/busybox
+$ docker run -it --name dt-busybox busybox:musl
+Unable to find image 'busybox:musl' locally
 ...
+Status: Downloaded newer image for busybox:musl
 / # touch file.txt
 / # exit
 ```
@@ -226,15 +228,20 @@ latest: Pulling from library/busybox
 
 ```bash
 $ docker commit dt-busybox dt/busybox:0.1
-a369e1652240e4dbfb19600346f3a552c86d2aa8e33c4ed66e0de5ca7c854379
+sha256:b57102c04ff0d2d0842a1ab7637d2ee594a3e76463b29af6e2eca9a2b27f67e6
 
 $ docker images
-REPOSITORY     TAG     IMAGE ID      CREATED        VIRTUAL SIZE
-dt/busybox     0.1     a369e1652240  45 seconds ago     1.109 MB
-dt/gunicorn    latest  af8e461b5e1c  1 minutes ago      1.088 GB
-hello-world    latest  975b84d108f1  4 weeks ago           960 B
-python         2.7.7   a87a2288ce78  15 months ago      1.043 GB
+REPOSITORY   TAG        IMAGE ID     CREATED        VIRTUAL SIZE
+dt/busybox   0.1        b57102c04ff0 15 seconds ago 1.213 MB
+busybox      musl       733eb3059dce 5 weeks ago    1.213 MB
 ```
+
+* you can **tag** a version with `latest` to make it the default one
+
+```bash
+$ docker tag busybox:musl busybox:latest
+```
+
 
 ---
 
@@ -244,13 +251,13 @@ class: center, middle
 
 ---
 
-# Many *flavors*
+## Many *flavors*
 
 * *ephemeral*
 
 ```bash
 $ docker run --rm busybox date
-Wed Nov 11 11:45:19 UTC 2015
+Wed Nov 16 20:42:07 UTC 2016
 ```
 
 * *attached*
@@ -258,7 +265,7 @@ Wed Nov 11 11:45:19 UTC 2015
 ```bash
 $ docker run -it busybox
 / # date
-Wed Nov 11 11:43:34 UTC 2015
+Wed Nov 16 20:42:29 UTC 2016
 / # exit
 ```
 
@@ -270,22 +277,22 @@ $ docker run --name dt-daemon -d busybox \
 386b5edd9441de261dfa578ee48b1875ae2690b28fafd57c4d5dc6ea8115ae22
 
 $ docker logs dt-daemon
-Wed Nov 11 11:41:00 UTC 2015
-Wed Nov 11 11:41:10 UTC 2015
-Wed Nov 11 11:41:20 UTC 2015
+Wed Nov 16 20:42:47 UTC 2016
+Wed Nov 16 20:42:57 UTC 2016
+Wed Nov 16 20:43:07 UTC 2016
 ```
 
 ---
 
-# Keeping in touch
+## Keeping in touch
 
-* obain **logs** of *running* and *terminated* instances
-* **attach** to the stdin/out of the *running* (process in a) container
+* obtain **logs** of *running* and *terminated* instances,
+* **attach** to the stdin/out of the *running* (process in a) container.
 
 ```bash
-$ docker attach dt-daemon
-Wed Nov 11 12:29:41 UTC 2015
-Wed Nov 11 12:29:51 UTC 2015
+$ docker attach --sig-proxy=false dt-daemon
+Wed Nov 16 21:32:31 UTC 2016
+Wed Nov 16 21:32:41 UTC 2016
 ```
 
 * **exec** another process in a *running* container
@@ -295,25 +302,24 @@ $ docker exec dt-daemon ps -a
 
 PID   USER     TIME   COMMAND
     1 root       0:00 sh -c while true; do date; sleep 10; done
-   12 root       0:00 sleep 10
-   13 root       0:00 ps
+   29 root       0:00 sleep 10
+   30 root       0:00 ps -a
 ```
 
 ---
 
 class: center, middle
 
-# Volumes and ports
-
+# Persistence and Communication
 
 ---
 
-## Volumes (filesystem)
+## Volumes (persistence, *old religion*)
 
-A road to **persistence**: just *create* a container with a *volume* (`-v`)
+A road to persistence: just *create* a container with a *volume* (`-v`)
 
 ```bash
-$ docker create --name dt-vol -v /data busybox
+$ docker create --name dt-vol-c -v /data busybox
 ```
 
 Now you can
@@ -321,15 +327,38 @@ Now you can
 * *write* to a volume (even with an *ephemeral* run)
 
 ```bash
-$ docker run --rm --volumes-from dt-vol busybox sh -c 'date > /data/file.txt'
+$ docker run --rm --volumes-from dt-vol-c busybox sh -c 'date > /data/file.txt'
 ```
 
 * *read* from the same volume at any time
 
 ```bash
-$ docker run --rm --volumes-from dt-vol busybox sh -c 'cat /data/file.txt'
-Wed Nov 11 13:02:33 UTC 2015
+$ docker run --rm --volumes-from dt-vol-c busybox sh -c 'cat /data/file.txt'
+Wed Nov 16 20:33:21 UTC 2016
 ```
+
+---
+
+## Named volumes (persistence, *new religion*)
+
+A road to persistence: just *create* a container with a *volume* (`-v`)
+
+```bash
+$ docker volume create --name dt-vol-n
+```
+
+As before, you can (even with *ephemeral* runs), read/write
+
+```bash
+$ docker run --rm --volume dt-vol-n:/data busybox sh -c 'date > /data/file.txt'
+
+$ docker run --rm --volume dt-vol-n:/data busybox sh -c 'cat /data/file.txt'
+Wed Nov 16 20:35:41 UTC 2016
+```
+
+You can *manage* them with **volume** and subcommands:
+
+* list (**ls**), remove (**rm**), or inspect (**inspect**).
 
 ---
 
@@ -341,13 +370,13 @@ Wed Nov 11 13:02:33 UTC 2015
 $ docker run -it --rm -v $(pwd):/data busybox sh -c 'date > /data/file.txt'
 
 $ cat file.txt
-Wed Nov 11 13:04:12 UTC 2015
+Wed Nov 16 20:48:39 UTC 2016
 ```
 
 * copy things **out** using *tar*
 
 ```bash
-$ docker run --rm --volumes-from dt-vol busybox tar -C data -cf- . | tar -xvf-
+$ docker run --rm --volume dt-vol-n:/data busybox tar -C data -cf- . | tar -xvf-
 ./
 ./file.txt
 ```
@@ -357,14 +386,14 @@ $ docker run --rm --volumes-from dt-vol busybox tar -C data -cf- . | tar -xvf-
 ```bash
 $ mkdir dt && touch dt/file.txt
 
-$ tar -cf- dt | docker run --rm --volumes-from dt-vol -iw /data busybox tar -xvf-
+$ tar -cf- dt | docker run --rm --volume dt-vol-n:/data -iw /data busybox tar -xvf-
 dt/
 dt/file.txt
 ```
 
 ---
 
-## Ports (networking)
+## Communication (ports, and link *old religion*)
 
 A road to **micro services**: have a container expose a *port* (`--expose`)
 
@@ -375,12 +404,12 @@ $ docker run --name dt-nc --rm -it --expose 80 busybox nc -l -p 80
 now you can *link* to it
 
 ```bash
-$ docker run -it --rm  --link dt-nc:nc-host busybox sh -c 'date | nc nc-host 80'
+$ docker run -it --rm --link dt-nc:nc-host busybox sh -c 'date | nc nc-host 80'
 ```
 
 this will make `date` output appear in the stdout of the first container.
 
-[Links appear to be a *legacy* feature in the last Docker release, sigh…]
+[But *links* are a *legacy* feature in the last Docker release, more on this later…]
 
 ---
 
@@ -392,39 +421,85 @@ To make a network service in a container public, you can *publish* a port (`-p`)
 $ docker run --name dt-nc --rm -it -p 80 busybox nc -l -p 80
 ```
 
-You can determine the public `IP:PORT` for example as
+You can determine the public `PORT` for example as
 
 ```bash
-$ MACHINE=$(docker-machine active)
-$ IP=$(docker-machine ip $MACHINE)
 $ PORT=$(docker port dt-nc 80 | cut -d : -f 2)
-$ echo $IP:$PORT
-192.168.99.100:32775
 ```
 
 and connect to such public address
 
 ```bash
-$ date | nc $IP $PORT
+$ date | nc 127.0.0.1 $PORT
 ```
 
 ---
 
-# Next episode
+## Networks
 
-We'll dockerize a chat application
+Explicitly manage (named) *networks* with **network** and subcommands:
 
-* learn to run Docker on non GNU/Linux OS using `docker-machine`
+* **create**, **ls**, **rm**, and **inspect**,
+* **connect**, and **disconnect** (containers).
+
+Using multiple networks one can split services, let's see an example with:
+
+* a *frontend*,
+* a *balancer*, and
+* a *backend*,
+
+where the first two, and last two are connected, but not the first and last.
+
+---
+
+class: center, middle
+
+# Two examples
+
+---
+
+## Using docker to compile/run code
+
+* see examples for: C, Java, Python and… PHP.
+
+---
+
+## Dockerize a chat application
+
 * build images (for `gunicorn`) and use images (for `redis`)
 * orchestrate images with `docker-compose`
 
 ---
 
-## Further references
+class: center, middle
+
+# A few links…
+
+---
+
+A reasonable GUI
+
+* [Portainer](http://portainer.io/)
+
+Looking for images?
+
+* [Docker Hub](https://hub.docker.com/explore/) the official *registry*,
+* [Alpine](https://github.com/gliderlabs/docker-alpine) base image,
+* [Phusion](https://github.com/phusion/baseimage-docker) base image,
+* Roll your own [registry](https://docs.docker.com/registry/deploying/).
+
+Older stuff…
 
 * [The Docker Ecosystem](https://www.digitalocean.com/community/tutorials/the-docker-ecosystem-an-introduction-to-common-components)
 * [Visualizing Docker Containers and Images](http://merrigrove.blogspot.it/2015/10/visualizing-docker-containers-and-images.html)
 * [Not so deep dive into Docker storage drivers](https://jpetazzo.github.io/assets/2015-03-03-not-so-deep-dive-into-docker-storage-drivers.html)
+
+---
+
+class: center
+
+![back](back2.jpg)
+
 
     </textarea>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">

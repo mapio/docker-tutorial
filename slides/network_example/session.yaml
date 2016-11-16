@@ -1,0 +1,9 @@
+session_name: 'network_example'
+windows:
+- focus: 'true'
+  layout: eabd,176x35,0,0{80x35,0,0,4,95x35,81,0[95x11,81,0,0,95x11,81,12,1,95x11,81,24,2]}
+  panes:
+    - figlet network 
+    - ./backend.sh
+    - ./balancer.sh
+    - ./frontend.sh
