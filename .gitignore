@@ -1,0 +1,4 @@
+python-websockets-chat/
+app/
+logs/
+.env

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec docker run --rm -v $(pwd):/src -w /src openjdk:7-jdk-alpine java "$@"

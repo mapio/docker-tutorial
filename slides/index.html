@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+       li { line-height: 1.5em; }
+       p { line-height: 3em; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Docker for the **dev** in **devops**
+
+Massimo Santini
+
+---
+
+class: center, middle
+
+# Introduction
+
+---
+
+## Dependency hell
+
+Issues when developing complex software
+
+* libraries (polyglot),
+* services (db server, http server, cache, log)
+
+Why not let the developers take care of (some) operations aspects?
+
+* the "devops" approach
+
+---
+
+## Desiderata
+
+From the "dev" point of view:
+
+* predictability
+* replicability
+* versioning
+* lightweight
+
+From the "ops" point of view:
+
+* fault tolerance
+* portability
+* scalability
+* composability
+* scheduling & orchestration
+
+---
+
+## Solutions
+
+Configuration management
+
+* [Saltstack](http://saltstack.com/)
+* [Chef](https://www.chef.io/chef/)
+* [Puppet](https://puppetlabs.com/)
+* [Ansible](http://www.ansible.com/)
+
+Virtualization
+
+* [Vagrant](https://www.vagrantup.com/)
+
+Virtualization with OS (GNU/Linux) support
+
+* [KVM](http://www.linux-kvm.org/)
+* [LXC](https://linuxcontainers.org/)
+
+---
+
+## Virtualization à la Docker
+
+Process & memory
+
+* LXC = kernel cgroups + namespaces
+
+Filesystem
+
+* AUFS
+* Device Mapper
+* BTRFS
+
+---
+
+class: center, middle
+
+# Basic concepts
+
+---
+
+## **image** (filesystem)
+
+* a DAG of copy-on-write **read-only** filesystems
+* obtained by: **pull** (from a *hub*, also **push**), **build**, or **commit**.
+
+```bash
+$ docker pull hello-world
+
+...
+Digest: sha256:517f03be3f8169d84711c9ffb2b3235a4d27c1eb4ad147f6248c8040adb93113
+Status: Downloaded newer image for hello-world:latest
+
+$ docker images -a
+
+REPOSITORY   TAG     IMAGE ID      CREATED     VIRTUAL SIZE
+hello-world  latest  975b84d108f1  4 weeks ago        960 B
+<none>       <none>  3f12c794407e  4 weeks ago        960 B
+
+```
+
+---
+
+## **container** (filesystem/process)
+
+* an **image** plus a **writable** copy-on-write layer
+* (explicitly) obtained by: **create**
+
+```bash
+
+$ docker create --name dt-image hello-world
+8c17068f0c805e50778522edecbc15e7e47edd4ba961adfba7da05d403d65e12
+
+$ docker ps -a
+CONTAINER ID  IMAGE        COMMAND   CREATED        STATUS  PORTS  NAMES
+8c17068f0c80  hello-world  "/hello"  5 seconds ago  Created        dt-image
+
+```
+
+* (implicitly) obtained by: **run** = (**create** + **start**),
+
+```bash
+$ docker run hello-world
+Hello from Docker.
+...
+
+$ docker ps -a
+CONTAINER ID  IMAGE        COMMAND   CREATED         STATUS     PORTS  NAMES
+8c17068f0c80  hello-world  "/hello"  25 seconds ago  Created           dt-image
+7f937e7c88dc  hello-world  "/hello"  5 seconds ago   Exited (0)        silly_yalow
+```
+
+---
+
+## Bookkeeping
+
+Take care of your images by
+
+* list, inspect, remove
+
+Take care of your containers by
+
+* list, inspect, remove (filesystem)
+* start, stop, kill, pause, unpause (processes)
+
+---
+
+class: center, middle
+
+# Producing *images*
+
+---
+
+## **build**
+
+* write a `Dockerfile` to describe build steps and configurations…
+
+```Dockerfile
+FROM python:2.7.7
+MAINTAINER Massimo Santini "santini@di.unimi.it"
+RUN apt-get update && apt-get install -qy libevent-dev
+RUN pip install gunicorn gevent
+RUN mkdir /app
+COPY app.py /app/app.py
+WORKDIR /app
+CMD [ "gunicorn", "-k", "gevent", "-b", "0.0.0.0:8000", "app:app" ]
+```
+
+* and **build**!
+
+```bash
+$ docker build -t dt/gunicorn .
+...
+
+$ docker images
+REPOSITORY   TAG     IMAGE ID      CREATED        VIRTUAL SIZE
+dt/gunicorn  latest  af8e461b5e1c  1 minutes ago      1.088 GB
+hello-world  latest  975b84d108f1  4 weeks ago           960 B
+python       2.7.7   a87a2288ce78  15 months ago      1.043 GB
+```
+
+---
+
+## **commit**
+
+* run (and modify) a container…
+
+```bash
+$ docker run -it --name dt-busybox busybox
+Unable to find image 'busybox:latest' locally
+latest: Pulling from library/busybox
+...
+/ # touch file.txt
+/ # exit
+```
+
+* and **commit**!
+
+```bash
+$ docker commit dt-busybox dt/busybox:0.1
+a369e1652240e4dbfb19600346f3a552c86d2aa8e33c4ed66e0de5ca7c854379
+
+$ docker images
+REPOSITORY     TAG     IMAGE ID      CREATED        VIRTUAL SIZE
+dt/busybox     0.1     a369e1652240  45 seconds ago     1.109 MB
+dt/gunicorn    latest  af8e461b5e1c  1 minutes ago      1.088 GB
+hello-world    latest  975b84d108f1  4 weeks ago           960 B
+python         2.7.7   a87a2288ce78  15 months ago      1.043 GB
+```
+
+---
+
+class: center, middle
+
+# Running *containers*
+
+---
+
+# Many *flavors*
+
+* *ephemeral*
+
+```bash
+$ docker run --rm busybox date
+Wed Nov 11 11:45:19 UTC 2015
+```
+
+* *attached*
+
+```bash
+$ docker run -it busybox
+/ # date
+Wed Nov 11 11:43:34 UTC 2015
+/ # exit
+```
+
+* *daemonized*
+
+```bash
+$ docker run --name dt-daemon -d busybox \
+    sh -c 'while true; do date; sleep 10; done'
+386b5edd9441de261dfa578ee48b1875ae2690b28fafd57c4d5dc6ea8115ae22
+
+$ docker logs dt-daemon
+Wed Nov 11 11:41:00 UTC 2015
+Wed Nov 11 11:41:10 UTC 2015
+Wed Nov 11 11:41:20 UTC 2015
+```
+
+---
+
+# Keeping in touch
+
+* obain **logs** of *running* and *terminated* instances
+* **attach** to the stdin/out of the *running* (process in a) container
+
+```bash
+$ docker attach dt-daemon
+Wed Nov 11 12:29:41 UTC 2015
+Wed Nov 11 12:29:51 UTC 2015
+```
+
+* **exec** another process in a *running* container
+
+```bash
+$ docker exec dt-daemon ps -a
+
+PID   USER     TIME   COMMAND
+    1 root       0:00 sh -c while true; do date; sleep 10; done
+   12 root       0:00 sleep 10
+   13 root       0:00 ps
+```
+
+---
+
+class: center, middle
+
+# Volumes and ports
+
+
+---
+
+## Volumes (filesystem)
+
+A road to **persistence**: just *create* a container with a *volume* (`-v`)
+
+```bash
+$ docker create --name dt-vol -v /data busybox
+```
+
+Now you can
+
+* *write* to a volume (even with an *ephemeral* run)
+
+```bash
+$ docker run --rm --volumes-from dt-vol busybox sh -c 'date > /data/file.txt'
+```
+
+* *read* from the same volume at any time
+
+```bash
+$ docker run --rm --volumes-from dt-vol busybox sh -c 'cat /data/file.txt'
+Wed Nov 11 13:02:33 UTC 2015
+```
+
+---
+
+## Data to/from the host
+
+* **map** a volume to a *host filesystem* (but may be a mess)
+
+```bash
+$ docker run -it --rm -v $(pwd):/data busybox sh -c 'date > /data/file.txt'
+
+$ cat file.txt
+Wed Nov 11 13:04:12 UTC 2015
+```
+
+* copy things **out** using *tar*
+
+```bash
+$ docker run --rm --volumes-from dt-vol busybox tar -C data -cf- . | tar -xvf-
+./
+./file.txt
+```
+
+* copy things **in** using *tar*
+
+```bash
+$ mkdir dt && touch dt/file.txt
+
+$ tar -cf- dt | docker run --rm --volumes-from dt-vol -iw /data busybox tar -xvf-
+dt/
+dt/file.txt
+```
+
+---
+
+## Ports (networking)
+
+A road to **micro services**: have a container expose a *port* (`--expose`)
+
+```bash
+$ docker run --name dt-nc --rm -it --expose 80 busybox nc -l -p 80
+```
+
+now you can *link* to it
+
+```bash
+$ docker run -it --rm  --link dt-nc:nc-host busybox sh -c 'date | nc nc-host 80'
+```
+
+this will make `date` output appear in the stdout of the first container.
+
+[Links appear to be a *legacy* feature in the last Docker release, sigh…]
+
+---
+
+## Talking to the outside world
+
+To make a network service in a container public, you can *publish* a port (`-p`)
+
+```bash
+$ docker run --name dt-nc --rm -it -p 80 busybox nc -l -p 80
+```
+
+You can determine the public `IP:PORT` for example as
+
+```bash
+$ MACHINE=$(docker-machine active)
+$ IP=$(docker-machine ip $MACHINE)
+$ PORT=$(docker port dt-nc 80 | cut -d : -f 2)
+$ echo $IP:$PORT
+192.168.99.100:32775
+```
+
+and connect to such public address
+
+```bash
+$ date | nc $IP $PORT
+```
+
+---
+
+# Next episode
+
+We'll dockerize a chat application
+
+* learn to run Docker on non GNU/Linux OS using `docker-machine`
+* build images (for `gunicorn`) and use images (for `redis`)
+* orchestrate images with `docker-compose`
+
+---
+
+## Further references
+
+* [The Docker Ecosystem](https://www.digitalocean.com/community/tutorials/the-docker-ecosystem-an-introduction-to-common-components)
+* [Visualizing Docker Containers and Images](http://merrigrove.blogspot.it/2015/10/visualizing-docker-containers-and-images.html)
+* [Not so deep dive into Docker storage drivers](https://jpetazzo.github.io/assets/2015-03-03-not-so-deep-dive-into-docker-storage-drivers.html)
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>

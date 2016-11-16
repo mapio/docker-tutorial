@@ -1,0 +1,14 @@
+version: '2'
+services:
+    chat:
+      image: dt/chat
+      links:
+        - redis
+      ports:
+        - '80:8000'
+      volumes:
+        - ./logs:/app/logs
+      environment:
+        - REDIS_URL=redis://redis:6379
+    redis:
+      image: redis
