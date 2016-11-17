@@ -125,15 +125,15 @@ Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
 Status: Downloaded newer image for hello-world:latest
 
 $ docker images
-REPOSITORY            TAG                 IMAGE ID            CREATED             SIZE
-hello-world           latest              c54a2cc56cbb        4 months ago        1.848 kB
+REPOSITORY  TAG    IMAGE ID     CREATED      SIZE
+hello-world latest c54a2cc56cbb 4 months ago 1.848 kB
 ```
 
 ---
 
 ## **container** (filesystem/process)
 
-* an **image** plus a **writable** copy-on-write layer,
+* an **image** plus a **writable** *copy-on-write* layer,
 * (explicitly) obtained by: **create**.
 
 ```bash
@@ -192,7 +192,7 @@ RUN pip install gunicorn gevent
 EXPOSE 8000
 RUN mkdir /app
 WORKDIR /app
-CMD [ "gunicorn", "--log-level", "INFO", "--error-logfile", "-", "-k", "gevent", "-b", "0.0.0.0:8000" ,"app:app" ]
+CMD [ "gunicorn", "--log-level", ... ]
 COPY app.py /app/app.py
 ```
 
@@ -498,11 +498,11 @@ Older stuff…
 
 class: center
 
-![back](back2.jpg)
+![back](back.jpg)
 
 
     </textarea>
-    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    <script src="/remark.js">
     </script>
     <script>
       var slideshow = remark.create();
