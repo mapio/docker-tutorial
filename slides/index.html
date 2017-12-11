@@ -121,12 +121,12 @@ class: center, middle
 ```bash
 $ docker pull hello-world
 ...
-Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
+Digest: sha256:be0cd392e45be79ffeffa6b05338b98ebb16c87b255f48e297ec7f98e123905c
 Status: Downloaded newer image for hello-world:latest
 
 $ docker images
 REPOSITORY  TAG    IMAGE ID     CREATED      SIZE
-hello-world latest c54a2cc56cbb 4 months ago 1.848 kB
+hello-world latest f2a91732366c 2 weeks ago  1.85kB
 ```
 
 ---
@@ -169,8 +169,8 @@ Take care of your *images* by
 
 Take care of your *containers* by
 
-* list (**ps**), inspect (**inspect**), remove (**rm**) filesystem,
-* **start**, **stop**, **kill**, **pause**, **unpause** (processes).
+* list (**ps**), inspect (**inspect**), remove (**rm**) – *filesystem*,
+* **start**, **stop**, **kill**, **pause**, **unpause** – *processes*.
 
 ---
 
@@ -314,37 +314,12 @@ class: center, middle
 
 ---
 
-## Volumes (persistence, *old religion*)
+## Named volumes (*guest* space)
 
-A road to persistence: just *create* a container with a *volume* (`-v`)
-
-```bash
-$ docker create --name dt-vol-c -v /data busybox
-```
-
-Now you can
-
-* *write* to a volume (even with an *ephemeral* run)
+A road to persistence: just **create** a *volume* with a *name*
 
 ```bash
-$ docker run --rm --volumes-from dt-vol-c busybox sh -c 'date > /data/file.txt'
-```
-
-* *read* from the same volume at any time
-
-```bash
-$ docker run --rm --volumes-from dt-vol-c busybox sh -c 'cat /data/file.txt'
-Wed Nov 16 20:33:21 UTC 2016
-```
-
----
-
-## Named volumes (persistence, *new religion*)
-
-A road to persistence: just *create* a container with a *volume* (`-v`)
-
-```bash
-$ docker volume create --name dt-vol-n
+$ docker volume create dt-vol-n
 ```
 
 As before, you can (even with *ephemeral* runs), read/write
@@ -362,7 +337,7 @@ You can *manage* them with **volume** and subcommands:
 
 ---
 
-## Data to/from the host
+## Volumes (*host* space)
 
 * **map** a volume to a *host filesystem* (but may be a mess)
 
@@ -373,47 +348,42 @@ $ cat file.txt
 Wed Nov 16 20:48:39 UTC 2016
 ```
 
-* copy things **out** using *tar*
+* copy things *in*/*out* using **cp** (needs a *container*)
 
 ```bash
-$ docker run --rm --volume dt-vol-n:/data busybox tar -C data -cf- . | tar -xvf-
-./
-./file.txt
-```
-
-* copy things **in** using *tar*
-
-```bash
-$ mkdir dt && touch dt/file.txt
-
-$ tar -cf- dt | docker run --rm --volume dt-vol-n:/data -iw /data busybox tar -xvf-
-dt/
-dt/file.txt
+$ CID=$(docker create --volume dt-vol-n:/data busybox)
+$ docker cp $CID:/data/file.txt .
+$ docker cp file.txt $CID:/data/file2.txt
+$ docker rm $CID
 ```
 
 ---
 
-## Communication (ports, and link *old religion*)
+## Communication (*guest* space)
 
-A road to **micro services**: have a container expose a *port* (`--expose`)
+A road to **micro services**: **create** a *network* and put containers on it
 
 ```bash
-$ docker run --name dt-nc --rm -it --expose 80 busybox nc -l -p 80
+$ docker network create dt-net
+
+$ docker run --network dt-net --name dt-nc --rm -it busybox nc -l -p 80
 ```
 
-now you can *link* to it
+you cant talk to it from containers on the same network:
 
 ```bash
-$ docker run -it --rm --link dt-nc:nc-host busybox sh -c 'date | nc nc-host 80'
+$ docker run -it --rm --network dt-net busybox sh -c 'date | nc dt-nc 80'
 ```
 
 this will make `date` output appear in the stdout of the first container.
 
-[But *links* are a *legacy* feature in the last Docker release, more on this later…]
+You can manage networks with **network** and subcommands:
+
+* list (**ls**), remove (**rm**), or inspect (**inspect**).
 
 ---
 
-## Talking to the outside world
+## Communication (*host* space)
 
 To make a network service in a container public, you can *publish* a port (`-p`)
 
@@ -435,12 +405,19 @@ $ date | nc 127.0.0.1 $PORT
 
 ---
 
-## Networks
+class: center, middle
 
-Explicitly manage (named) *networks* with **network** and subcommands:
+# A few use cases
 
-* **create**, **ls**, **rm**, and **inspect**,
-* **connect**, and **disconnect** (containers).
+---
+
+## Using docker to compile/run code
+
+* see examples for: C, Java, Python and… PHP.
+
+---
+
+## More interesting network topologies
 
 Using multiple networks one can split services, let's see an example with:
 
@@ -452,22 +429,16 @@ where the first two, and last two are connected, but not the first and last.
 
 ---
 
-class: center, middle
+## A little bit of orchestration
 
-# Two examples
+When you have multiple services, you can:
 
----
+* use *YML* to descrive a complex *configuration*,
+* *delpoy* it on a set of *nodes*
 
-## Using docker to compile/run code
+The **swarm**, **service** and **stack** commands come to the rescue...
 
-* see examples for: C, Java, Python and… PHP.
-
----
-
-## Dockerize a chat application
-
-* build images (for `gunicorn`) and use images (for `redis`)
-* orchestrate images with `docker-compose`
+Let's see an example with a chat application, using *redis* for persisetnce.
 
 ---
 
