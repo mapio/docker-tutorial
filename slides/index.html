@@ -43,10 +43,11 @@ class: center, middle
 
 ## Dependency hell
 
-Issues when developing complex software
+Issues when developing complex software, many:
 
-* libraries (polyglot),
-* services (db server, http server, cache, log).
+* libraries (*polyglot*),
+* services (dbms, httpd, cache, log…),
+* people (*onboarding*).
 
 Why not let the developers take care of (some) operations aspects?
 
@@ -103,7 +104,8 @@ Filesystem
 
 * AUFS,
 * Device Mapper,
-* BTRFS.
+* BTRFS
+* …
 
 ---
 
@@ -187,26 +189,24 @@ class: center, middle
 ```Dockerfile
 FROM python:2.7-alpine
 MAINTAINER Massimo Santini "santini@di.unimi.it"
-RUN apk add --update gcc python-dev musl-dev && rm -rf /var/cache/apk/*
-RUN pip install gunicorn gevent
-EXPOSE 8000
-RUN mkdir /app
 WORKDIR /app
-CMD [ "gunicorn", "--log-level", ... ]
-COPY app.py /app/app.py
+ADD . /app
+RUN pip install -r requirements.txt
+EXPOSE 80
+CMD ["python", "app.py"]
 ```
 
 * and **build**!
 
 ```bash
-$ docker build -t dt/gunicorn .
+$ docker build -t mapio/dt-example .
 ...
 
 $ docker images
-REPOSITORY   TAG        IMAGE ID     CREATED        SIZE
-dt/gunicorn  latest     11a0c2a15c01 12 minutes ago 213.4 MB
-python       2.7-alpine 055c3b9a9656 4 weeks ago    71.37 MB
-hello-world  latest     c54a2cc56cbb 4 months ago   1.848 kB
+REPOSITORY        TAG        IMAGE ID     CREATED        SIZE
+mapio/dt-example  latest     11a0c2a15c01 12 minutes ago 213.4 MB
+python            2.7-alpine 055c3b9a9656 4 weeks ago    71.37 MB
+hello-world       latest     c54a2cc56cbb 4 months ago   1.848 kB
 ```
 
 ---
@@ -242,6 +242,32 @@ busybox      musl       733eb3059dce 5 weeks ago    1.213 MB
 $ docker tag busybox:musl busybox:latest
 ```
 
+---
+
+## **push**
+
+* choose a public registry, create an account and authenticate
+
+```bash
+$ docker login
+Login with your Docker ID to push and pull images from Docker Hub.
+If you dont have a Docker ID, head over to https://hub.docker.com to create one.
+Username: mapio
+Password: **********
+Login Succeeded
+
+```
+
+* *push* your image to make it available to other devs (or in production):
+
+```bash
+$ docker push mapio/dt-example
+The push refers to a repository [docker.io/mapio/dt-example]
+455deb6fe734: Pushed
+b4bac53253fd: Pushed
+b3fec61839f1: Pushed
+latest: digest: sha256:75d28a5d629f7f1d2e2983839aad size: 1785
+```
 
 ---
 
@@ -448,7 +474,12 @@ class: center, middle
 
 ---
 
-A reasonable GUI
+Really good starting points:
+
+* [Container training](http://container.training/) by Jérôme Petazzoni [@jpetazzo](https://twitter.com/jpetazzo),
+* [PWD](https://labs.play-with-docker.com/): a nice playground.
+
+A reasonable GUI:
 
 * [Portainer](http://portainer.io/)
 
@@ -458,12 +489,6 @@ Looking for images?
 * [Alpine](https://github.com/gliderlabs/docker-alpine) base image,
 * [Phusion](https://github.com/phusion/baseimage-docker) base image,
 * Roll your own [registry](https://docs.docker.com/registry/deploying/).
-
-Older stuff…
-
-* [The Docker Ecosystem](https://www.digitalocean.com/community/tutorials/the-docker-ecosystem-an-introduction-to-common-components)
-* [Visualizing Docker Containers and Images](http://merrigrove.blogspot.it/2015/10/visualizing-docker-containers-and-images.html)
-* [Not so deep dive into Docker storage drivers](https://jpetazzo.github.io/assets/2015-03-03-not-so-deep-dive-into-docker-storage-drivers.html)
 
 ---
 

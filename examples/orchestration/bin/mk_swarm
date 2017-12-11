@@ -1,0 +1,13 @@
+#!/bin/bash
+
+MANAGER_IP=$(docker-machine ip dt-manager)
+
+docker-machine ssh dt-manager docker swarm init --advertise-addr $MANAGER_IP
+
+JOIN_CMD=$(docker-machine ssh dt-manager docker swarm join-token  worker | grep 'docker swarm join')
+
+for vm in worker0 worker1; do
+    docker-machine ssh dt-$vm $JOIN_CMD
+done
+
+docker-machine ssh dt-manager docker node ls
