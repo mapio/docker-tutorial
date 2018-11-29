@@ -188,7 +188,7 @@ class: center, middle
 
 ```Dockerfile
 FROM python:2.7-alpine
-MAINTAINER Massimo Santini "santini@di.unimi.it"
+LABEL maintainer="santini@di.unimi.it"
 WORKDIR /app
 ADD . /app
 RUN pip install -r requirements.txt
