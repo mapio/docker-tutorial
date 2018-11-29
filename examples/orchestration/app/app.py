@@ -4,7 +4,7 @@ import os
 import socket
 
 # Connect to Redis
-redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
+redis = Redis(host = "redis", db = 0, socket_connect_timeout = 2, socket_timeout = 2)
 
 app = Flask(__name__)
 
@@ -18,7 +18,7 @@ def hello():
     html = "<h3>Hello world!</h3>" \
            "<b>Hostname:</b> {hostname}<br/>" \
            "<b>Visits:</b> {visits}"
-    return html.format(hostname=socket.gethostname(), visits=visits)
+    return html.format(hostname = socket.gethostname(), visits = visits)
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
+if __name__ = =  "__main__":
+    app.run(host = '0.0.0.0', port = 80)
