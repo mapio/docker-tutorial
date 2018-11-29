@@ -3,8 +3,7 @@
 This repo contains the support material for a short class about docker for
 developers.
 
-This tutorial is based on [Docker](https://www.docker.com/) version 17.09.0-ce (build afdb6d4) and [Docker Compose](https://docs.docker.com/compose/) version
-1.16.1, (build 6d1ac21).
+This tutorial is based on [Docker](https://www.docker.com/) version 18.09.0 (build 4d60db4).
 
 You can get a [recent versions of Docker](https://www.docker.com/get-docker)
 that runs natively on GNU/Linux, OS X and Windows; alternatively, you can use
