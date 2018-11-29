@@ -13,7 +13,7 @@ that runs natively on GNU/Linux, OS X and Windows; alternatively, you can use
 
 ## Slides
 
-The [slides](slides/) directory contains the slides of the lecture (also   [browsable](http://broad-foot.surge.sh/) online).
+The [slides](slides/) directory contains the slides of the lecture (also   [browsable](http://docker-tutorial.mapio.it/) online).
 
 ## Examples
 
