@@ -3,7 +3,7 @@
 This repo contains the support material for a short class about docker for
 developers.
 
-This tutorial is based on [Docker](https://www.docker.com/) version 18.09.0 (build 4d60db4).
+This tutorial is based on [Docker](https://www.docker.com/) version 19.03.13.
 
 You can get a [recent versions of Docker](https://www.docker.com/get-docker)
 that runs natively on GNU/Linux, OS X and Windows; alternatively, you can use
@@ -12,7 +12,7 @@ that runs natively on GNU/Linux, OS X and Windows; alternatively, you can use
 
 ## Slides
 
-The [slides](slides/) directory contains the slides of the lecture (also   [browsable](http://docker-tutorial.mapio.it/) online).
+The [slides](slides/) directory contains the slides of the lecture (also   [browsable](http://docker-tutorial.surge.sh/) online).
 
 ## Examples
 
@@ -22,13 +22,13 @@ of such examples is described as follow.
 ### Compilation (and execution) of code in different languages
 
 The [compilation](examples/compilation/) directory shows how to leverage Docker
-to compile, and execute, a simple "Hello, world!" applicaiton in several
-langauges.
+to compile, and execute, a simple "Hello, world!" application in several
+languages.
 
-### A simple networking example
+### Build and remote development
 
-The [networking](examples/networking) directory contains an example of usage of
-two networks to simulate a more complex network topology.
+The [build](examples/build/) directory can be used to experiment with the build
+process and with [remote development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack) with [Visual Studio Code](https://code.visualstudio.com/)
 
 ### Orchestration of a web application
 
