@@ -1,5 +1,5 @@
 {
-	"name": "Docker @ Italiaonline",
+	"name": "Docker Tutorial",
 	"build": {
 		"dockerfile": "../Dockerfile",
 		"context": "..",
