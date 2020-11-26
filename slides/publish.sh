@@ -1,3 +1,3 @@
 #!/bin/bash
 
-surge .
+surge --domain docker-tutorial.surge.sh .
