@@ -228,12 +228,12 @@ CMD ["python", "app.py"]
 * and **build**!
 
 ```bash
-$ docker build -t mapio/dt-example .
+$ docker build -t mapio/dt-aop .
 ...
 
 $ docker images
 REPOSITORY        TAG        IMAGE ID     CREATED        SIZE
-mapio/dt-example  latest     11a0c2a15c01 12 minutes ago 213.4 MB
+mapio/dt-aop  latest     11a0c2a15c01 12 minutes ago 213.4 MB
 python            3.7-alpine 8922d588eec6 4 weeks ago      98.4MB
 hello-world       latest     c54a2cc56cbb 4 months ago   1.848 kB
 ```
@@ -259,8 +259,8 @@ Login Succeeded
 * **push** your image to make it available to other devs (or in production):
 
 ```bash
-$ docker push mapio/dt-example
-The push refers to a repository [docker.io/mapio/dt-example]
+$ docker push mapio/dt-aop
+The push refers to a repository [docker.io/mapio/dt-aop]
 455deb6fe734: Pushed
 b4bac53253fd: Pushed
 b3fec61839f1: Pushed
@@ -469,7 +469,7 @@ The **Ops** point of view
 services:
 
   web:
-    image: mapio/dt-example
+    image: mapio/dt-aop
     ports:
       - target: 80
         published: 80
@@ -624,7 +624,7 @@ Looking for images?
 
 class: pic
 
-![back](back.jpg)
+![back](back.png)
 
 
     </textarea>
