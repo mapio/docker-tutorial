@@ -1,6 +1,0 @@
-eval $(docker-machine env dt-manager)
-
-docker stack deploy -c ../confs/full.yml dt
-
-echo "Connect to http://$(docker-machine ip dt-manager):8080/ for manager"
-echo "Connect to http://$(docker-machine ip dt-manager)/ for app"

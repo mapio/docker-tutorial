@@ -1,0 +1,81 @@
+version: "3.8"
+services:
+
+  web:
+    image: mapio/dt-app
+    build: ../build
+    ports:
+      - "80:80"
+    networks:
+      - dt-network
+
+  redis:
+    image: redis
+    volumes:
+      - dt-data:/data
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: redis-server --appendonly yes
+    networks:
+      - dt-network
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - dt-network
+
+  portainer:
+    image: portainer/portainer
+    depends_on:
+      - agent
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - target: 8000 # ssh tunnel
+        published: 8000
+      - target: 9000
+        published: 9000
+    volumes:
+      - type: volume
+        source: portainer
+        target: /data
+    networks:
+      - agent-network
+
+  agent:
+    image: portainer/agent
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: bind
+        source: /var/lib/docker/volumes
+        target: /var/lib/docker/volumes
+    networks:
+      - agent-network
+
+volumes:
+  dt-data:
+  portainer:
+
+networks:
+  agent-network:
+    driver: overlay
+    attachable: true
+  dt-network:
